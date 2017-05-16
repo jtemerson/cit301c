@@ -1,12 +1,12 @@
 <div class="row">
   <div class="col-xs-12">
-    <h1>{{ contact.name }}</h1>
+    <h1>{{ contact?.name }}</h1>
   </div>
 </div>
 
 <div class="row">
   <div class="col-xs-8">
-    <img src="{{ contact.imageUrl }}" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;"/>
+    <img src="{{ contact?.imageUrl }}" alt="{{ contact?.name }}" class="img-responsive" style="max-height: 50px;"/>
   </div>
   <div class="col-xs-2">
     <a href="#"><button class="btn btn-primary">Add</button></a>
@@ -19,6 +19,6 @@
 <hr />
 
 <div class="row">
-  <p>Email: {{ contact.name }}</p>
-  <p>Phone: {{ contact.phone }}</p>
+  <p>Email: {{ contact?.name }}</p>
+  <p>Phone: {{ contact?.phone }}</p>
 </div>
