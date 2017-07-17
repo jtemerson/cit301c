@@ -8,7 +8,6 @@ import { DocumentDetailComponent } from './documents/document-detail.component';
 import { ContactsDetailComponent } from './contacts/contacts-detail/contacts-detail.component';
 import { ContactEditComponent } from './contacts/contact-edit/contact-edit.component';
 
-
 const app_routes: Routes = [
 {path: '', redirectTo: '/documents', pathMatch: 'full'},
 {path: 'documents', component: DocumentsComponent, children: [
