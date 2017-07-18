@@ -19,7 +19,8 @@ export class ContactEditComponent implements OnInit {
 
   constructor(private contactService: ContactService,
               private router: Router,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute) {
+              }
 
   ngOnInit() {
     this.route.params
@@ -41,6 +42,9 @@ export class ContactEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    if (this.contact.group === null){
+      this.contact.group = [];
+    }
     let values = form.value;
     let newContact: Contact = new Contact(
       null,
@@ -70,7 +74,7 @@ isInvalidContact(newContact: Contact) {
   if (newContact.id === this.contact.id) {
     return true;
   }
-  if (this.contact.group !== null) {
+  if (this.contact.group) {
     for (let i = 0; i < this.contact.group.length; i++) {
       if (newContact.id === this.contact.group[i].id) {
         return true;
@@ -86,7 +90,7 @@ addToGroup($event: any) {
   if (this.invalidGroupContact) {
     return;
   }
-  if (this.contact.group === null){
+  if (!this.contact.group){
     this.contact.group = [];
   }
   this.contact.group.push(selectedContact);

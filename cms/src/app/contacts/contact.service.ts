@@ -1,19 +1,25 @@
 import { Injectable, EventEmitter} from '@angular/core';
 import { Contact } from './contacts.model';
-import { MOCKCONTACTS } from './MOCKCONTACTS';
 import {Subject} from "rxjs/Subject";
 import {isUndefined} from "util";
+import {Http, Response, Headers} from "@angular/http";
+import 'rxjs/Rx';
 
 @Injectable()
 export class ContactService{
   contactSelectedEvent = new EventEmitter<Contact>();
-  contactChangedEvent = new EventEmitter<Contact[]>();
+  contactChangedEvent = new Subject<Contact[]>();
   contacts: Contact[] = [];
   currentContact: Contact;
   ContactListChangedEvent = new Subject<Contact[]>();
-  maxConId: number;
+  maxContactId: number;
+
+  constructor(private http:Http) {
+    this.initContacts();
+  }
 
   getContacts(): Contact[]{
+    // this.initContacts();
     return this.contacts.slice();
   }
 
@@ -25,12 +31,6 @@ getContact(id: string) {
   }
   return null;
 }
-
-  constructor(){
-    this.contacts = MOCKCONTACTS
-    this.currentContact = this.contacts[4];
-    this.maxConId = this.getMaxId();
-  }
 
   getMaxId() : number {
   let maxId = 0;
@@ -44,30 +44,38 @@ getContact(id: string) {
   return maxId;
 }
 
-updateContact(original: Contact, newCon: Contact) {
-  if (original === null || isUndefined(original) || newCon === null || isUndefined(newCon)) {
+updateContact(original: Contact, newContact: Contact) {
+  if (original === null || isUndefined(original) || newContact === null || isUndefined(newContact)) {
     return;
   }
   const pos = this.contacts.indexOf(original);
   if (pos < 0) {
     return;
   }
-  newCon.id = original.id;
-  this.contacts[pos] = newCon;
+  newContact.id = original.id;
+  this.contacts[pos] = newContact;
   let clone: Contact[] = this.contacts.slice();
-  this.ContactListChangedEvent.next(clone);
+  this.storeContacts(clone).subscribe(
+    (response: Response) => {
+      console.log(response);
+    }
+  );
 }
 
-addContact(newCon: Contact) {
-  if (newCon === null || isUndefined(newCon)){
+addContact(newContact: Contact) {
+  if (newContact === null || isUndefined(newContact)){
     return;
   }
 
-  this.maxConId++;
-  newCon.id = this.maxConId.toString();
-  this.contacts.push(newCon);
+  this.maxContactId++;
+  newContact.id = this.maxContactId.toString();
+  this.contacts.push(newContact);
   let clone: Contact[] = this.contacts.slice();
-  this.ContactListChangedEvent.next(clone);
+  this.storeContacts(clone).subscribe(
+  (response: Response) => {
+    console.log(response);
+  }
+);
 }
 
 deleteContact(contact: Contact) {
@@ -81,8 +89,33 @@ deleteContact(contact: Contact) {
   }
 
   this.contacts.splice(pos, 1);
-  let clone = this.contacts.slice();
-  this.ContactListChangedEvent.next(clone);
+  let clone: Contact[] = this.contacts.slice();
+  this.storeContacts(clone).subscribe(
+  (response: Response) => {
+    console.log(response);
+  }
+);
+}
+
+initContacts() {
+  this.http.get('https://cms-project-9d374.firebaseio.com/contacts.json')
+    .map(
+      (response: Response) =>{
+        return response.json();
+      }
+    )
+    .subscribe(
+      (response: Contact[]) => {
+        this.contacts = response;
+        this.currentContact = this.getContact('7');
+        this.maxContactId = this.getMaxId();
+        this.ContactListChangedEvent.next(this.contacts.slice());
+      }
+    );
+}
+
+storeContacts(value: Contact[]) {
+  return this.http.put('https://cms-project-9d374.firebaseio.com/contacts.json', value);
 }
 
 }

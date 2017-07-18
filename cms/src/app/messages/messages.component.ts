@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ContactService } from '../contacts/contact.service'
+import { MessageService } from './messages.service'
 
 @Component({
   selector: 'cms-messages',
@@ -7,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MessagesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private contactService: ContactService) { }
 
   ngOnInit() {
   }
